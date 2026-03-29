@@ -14,7 +14,6 @@ import plotly.graph_objects as go
 
 # ── config ────────────────────────────────────────────────────
 BASE     = os.path.dirname(os.path.abspath(__file__))
-
 DB_PATH  = os.path.join(BASE, 'data', 'ipl.db')
 MDL_PATH = os.path.join(BASE, 'data', 'ipl_model.pkl')
 
@@ -130,9 +129,7 @@ if page == "🏆 Season Overview":
                    COUNT(DISTINCT match_id) AS matches
             FROM deliveries GROUP BY season ORDER BY season
         """)
-        df = df.dropna(subset=['season'])
-        df = df.dropna(subset=['season'])
-        df['season'] = df['season'].astype(int).astype(str)
+        df['season'] = df['season'].astype(str)
         df['rpm'] = (df['runs'] / df['matches']).round(1)
         fig = px.bar(df, x='season', y='runs', color='rpm',
                      color_continuous_scale='Blues',
@@ -147,7 +144,8 @@ if page == "🏆 Season Overview":
             SELECT season, SUM(is_six) AS sixes
             FROM deliveries GROUP BY season ORDER BY season
         """)
-        df['season'] = df['season'].astype(str)
+        df = df.dropna(subset=['season'])
+        df['season'] = df['season'].astype(int).astype(str)
         fig = px.area(df, x='season', y='sixes',
                       color_discrete_sequence=['#e8711a'],
                       labels={'season':'Season','sixes':'Total Sixes'})
