@@ -20,19 +20,20 @@ MDL_PATH = os.path.join(BASE, 'data', 'ipl_model.pkl')
 # ── auto-build database and model if not present ──────────────
 @st.cache_resource
 def setup():
-    if not os.path.exists(DB_PATH):
-        from src.data_cleaning import load_raw, clean_matches, clean_deliveries, build_database
-        matches, deliveries   = load_raw()
-        matches               = clean_matches(matches)
-        deliveries            = clean_deliveries(deliveries, matches)
-        build_database(matches, deliveries)
-
-    if not os.path.exists(MDL_PATH):
-        from src.ml_model import load_data, engineer_features, train_model, save_model
-        df               = load_data()
-        df, features, le = engineer_features(df)
-        model, *_        = train_model(df, features)
-        save_model(model, le, features)
+    if os.path.exists(DB_PATH):
+        os.remove(DB_PATH)
+    if os.path.exists(MDL_PATH):
+        os.remove(MDL_PATH)
+    from src.data_cleaning import load_raw, clean_matches, clean_deliveries, build_database
+    matches, deliveries   = load_raw()
+    matches               = clean_matches(matches)
+    deliveries            = clean_deliveries(deliveries, matches)
+    build_database(matches, deliveries)
+    from src.ml_model import load_data, engineer_features, train_model, save_model
+    df               = load_data()
+    df, features, le = engineer_features(df)
+    model, *_        = train_model(df, features)
+    save_model(model, le, features)
 
 setup()
 
