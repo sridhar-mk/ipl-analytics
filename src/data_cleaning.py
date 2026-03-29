@@ -22,9 +22,9 @@ def load_raw():
 def clean_matches(df):
     # Normalise season label  e.g. "2007/08" → 2008
     def parse_season(s):
-        s = str(s)
+        s = str(s).strip()
         if '/' in s:
-            return int(s.split('/')[1])
+            return int(s.split('/')[0])  # 2007/08 → 2007, 2020/21 → 2020
         return int(s)
 
     df = df.copy()
