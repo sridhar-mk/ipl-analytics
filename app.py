@@ -136,7 +136,8 @@ if page == "🏆 Season Overview":
                      color_continuous_scale='Blues',
                      labels={'season':'Season','runs':'Total Runs','rpm':'Runs/Match'})
         fig.update_layout(showlegend=False, height=350,
-                          xaxis=dict(type='category', tickangle=-45))
+                  xaxis=dict(type='category', tickangle=-45, 
+                             tickmode='linear'))
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
