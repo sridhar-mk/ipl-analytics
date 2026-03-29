@@ -131,6 +131,7 @@ if page == "🏆 Season Overview":
             FROM deliveries GROUP BY season ORDER BY season
         """)
         df = df.dropna(subset=['season'])
+        df = df.dropna(subset=['season'])
         df['season'] = df['season'].astype(int).astype(str)
         df['rpm'] = (df['runs'] / df['matches']).round(1)
         fig = px.bar(df, x='season', y='runs', color='rpm',
