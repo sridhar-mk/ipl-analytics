@@ -11,12 +11,32 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-from src.ml_model import predict_match
 
 # ── config ────────────────────────────────────────────────────
-BASE     = os.path.dirname(__file__)
+BASE     = os.path.dirname(os.path.abspath(__file__))
 DB_PATH  = os.path.join(BASE, 'data', 'ipl.db')
 MDL_PATH = os.path.join(BASE, 'data', 'ipl_model.pkl')
+
+# ── auto-build database and model if not present ──────────────
+@st.cache_resource
+def setup():
+    if not os.path.exists(DB_PATH):
+        from src.data_cleaning import load_raw, clean_matches, clean_deliveries, build_database
+        matches, deliveries   = load_raw()
+        matches               = clean_matches(matches)
+        deliveries            = clean_deliveries(deliveries, matches)
+        build_database(matches, deliveries)
+
+    if not os.path.exists(MDL_PATH):
+        from src.ml_model import load_data, engineer_features, train_model, save_model
+        df               = load_data()
+        df, features, le = engineer_features(df)
+        model, *_        = train_model(df, features)
+        save_model(model, le, features)
+
+setup()
+
+from src.ml_model import predict_match
 
 st.set_page_config(
     page_title = "IPL Analytics",
@@ -108,11 +128,13 @@ if page == "🏆 Season Overview":
                    COUNT(DISTINCT match_id) AS matches
             FROM deliveries GROUP BY season ORDER BY season
         """)
+        df['season'] = df['season'].astype(str)
         df['rpm'] = (df['runs'] / df['matches']).round(1)
         fig = px.bar(df, x='season', y='runs', color='rpm',
                      color_continuous_scale='Blues',
-                     labels={'runs':'Total Runs','rpm':'Runs/Match'})
-        fig.update_layout(showlegend=False, height=350)
+                     labels={'season':'Season','runs':'Total Runs','rpm':'Runs/Match'})
+        fig.update_layout(showlegend=False, height=350,
+                          xaxis=dict(type='category', tickangle=-45))
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
@@ -121,9 +143,12 @@ if page == "🏆 Season Overview":
             SELECT season, SUM(is_six) AS sixes
             FROM deliveries GROUP BY season ORDER BY season
         """)
+        df['season'] = df['season'].astype(str)
         fig = px.area(df, x='season', y='sixes',
-                      color_discrete_sequence=['#e8711a'])
-        fig.update_layout(height=350)
+                      color_discrete_sequence=['#e8711a'],
+                      labels={'season':'Season','sixes':'Total Sixes'})
+        fig.update_layout(height=350,
+                          xaxis=dict(type='category', tickangle=-45))
         st.plotly_chart(fig, use_container_width=True)
 
     col3, col4 = st.columns(2)
