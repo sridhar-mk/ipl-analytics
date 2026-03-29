@@ -14,6 +14,7 @@ import plotly.graph_objects as go
 
 # ── config ────────────────────────────────────────────────────
 BASE     = os.path.dirname(os.path.abspath(__file__))
+
 DB_PATH  = os.path.join(BASE, 'data', 'ipl.db')
 MDL_PATH = os.path.join(BASE, 'data', 'ipl_model.pkl')
 
