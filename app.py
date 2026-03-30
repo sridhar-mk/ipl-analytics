@@ -129,15 +129,13 @@ if page == "🏆 Season Overview":
                    COUNT(DISTINCT match_id) AS matches
             FROM deliveries GROUP BY season ORDER BY season
         """)
-        df = df.dropna(subset=['season'])
-        df['season'] = df['season'].astype(int).astype(str)
+        df['season'] = df['season'].astype(str)
         df['rpm'] = (df['runs'] / df['matches']).round(1)
         fig = px.bar(df, x='season', y='runs', color='rpm',
                      color_continuous_scale='Blues',
                      labels={'season':'Season','runs':'Total Runs','rpm':'Runs/Match'})
         fig.update_layout(showlegend=False, height=350,
-                  xaxis=dict(type='category', tickangle=-45, 
-                             tickmode='linear'))
+                          xaxis=dict(type='category', tickangle=-45))
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
@@ -369,16 +367,28 @@ elif page == "⚔️ Team vs Team":
 # ══════════════════════════════════════════
 elif page == "🎯 Match Predictor":
     st.title("🎯 Match Winner Predictor")
-    st.caption("Random Forest model trained on 16 seasons of IPL data")
+    st.caption("Random Forest model — 15 features including win rate, head-to-head, venue advantage, recent form")
+
+    VENUES = [
+        'M Chinnaswamy Stadium', 'Wankhede Stadium', 'Eden Gardens',
+        'Feroz Shah Kotla', 'Arun Jaitley Stadium',
+        'MA Chidambaram Stadium', 'Rajiv Gandhi International Cricket Stadium',
+        'Sawai Mansingh Stadium', 'Punjab Cricket Association Stadium, Mohali',
+        'Narendra Modi Stadium', 'Maharashtra Cricket Association Stadium',
+        'Dubai International Cricket Stadium', 'Sheikh Zayed Stadium',
+    ]
 
     c1, c2 = st.columns(2)
-    team1  = c1.selectbox("Team 1 (Home)", TEAMS, index=0)
-    team2  = c2.selectbox("Team 2 (Away)", TEAMS, index=1)
-    city   = st.selectbox("Venue City", CITIES)
+    team1 = c1.selectbox("Team 1", TEAMS, index=0)
+    team2 = c2.selectbox("Team 2", TEAMS, index=1)
 
     c3, c4 = st.columns(2)
-    toss_winner  = c3.selectbox("Toss Winner", [team1, team2])
-    toss_decision = c4.selectbox("Toss Decision", ["bat", "field"])
+    venue = c3.selectbox("Venue", VENUES)
+    city  = c4.selectbox("City", CITIES)
+
+    c5, c6 = st.columns(2)
+    toss_winner   = c5.selectbox("Toss Winner", [team1, team2])
+    toss_decision = c6.selectbox("Toss Decision", ["field", "bat"])
 
     if st.button("🔮 Predict Winner", type="primary"):
         if team1 == team2:
@@ -386,9 +396,9 @@ elif page == "🎯 Match Predictor":
         else:
             try:
                 model_data = load_model()
-                p1, p2 = predict_match(
+                p1, p2, breakdown = predict_match(
                     model_data, team1, team2,
-                    city, toss_winner, toss_decision
+                    city, venue, toss_winner, toss_decision
                 )
                 st.markdown("---")
                 st.subheader("Prediction Result")
@@ -396,7 +406,7 @@ elif page == "🎯 Match Predictor":
 
                 with col1:
                     fig = go.Figure(go.Indicator(
-                        mode="gauge+number+delta",
+                        mode="gauge+number",
                         value=p1,
                         number={'suffix': '%'},
                         title={'text': f"{team1} Win Probability"},
@@ -415,7 +425,7 @@ elif page == "🎯 Match Predictor":
 
                 with col2:
                     fig = go.Figure(go.Indicator(
-                        mode="gauge+number+delta",
+                        mode="gauge+number",
                         value=p2,
                         number={'suffix': '%'},
                         title={'text': f"{team2} Win Probability"},
@@ -435,7 +445,15 @@ elif page == "🎯 Match Predictor":
                 winner = team1 if p1 > p2 else team2
                 prob   = max(p1, p2)
                 st.success(f"Model predicts **{winner}** wins with **{prob}%** probability")
-                st.info("Note: Predictions are based on historical patterns. Cricket is gloriously unpredictable!")
+
+                st.markdown("---")
+                st.subheader("Why this prediction? — Feature Breakdown")
+                for factor, value in breakdown.items():
+                    c_l, c_r = st.columns([1,2])
+                    c_l.markdown(f"**{factor}**")
+                    c_r.markdown(value)
+
+                st.info("Model uses 15 features: team strength, head-to-head record, venue advantage, recent form, and toss factors. Cricket is still gloriously unpredictable!")
 
             except Exception as e:
-                st.error(f"Run ml_model.py first to train the model. ({e})")
+                st.error(f"Error: {e}")
