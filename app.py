@@ -136,7 +136,8 @@ if page == "🏆 Season Overview":
                      color_continuous_scale='Blues',
                      labels={'season':'Season','runs':'Total Runs','rpm':'Runs/Match'})
         fig.update_layout(showlegend=False, height=350,
-                          xaxis=dict(type='category', tickangle=-45))
+                          xaxis=dict(type='category', tickangle=-45,
+                                     tickmode='linear'))
         st.plotly_chart(fig, use_container_width=True)
 
     with col2:
@@ -151,7 +152,8 @@ if page == "🏆 Season Overview":
                       color_discrete_sequence=['#e8711a'],
                       labels={'season':'Season','sixes':'Total Sixes'})
         fig.update_layout(height=350,
-                          xaxis=dict(type='category', tickangle=-45))
+                          xaxis=dict(type='category', tickangle=-45,
+                                     tickmode='linear'))
         st.plotly_chart(fig, use_container_width=True)
 
     col3, col4 = st.columns(2)
