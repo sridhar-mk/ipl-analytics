@@ -33,7 +33,7 @@ def setup():
     df               = load_data()
     df, features, le = engineer_features(df)
     model, *_        = train_model(df, features)
-    save_model(model, le, features)
+    save_model(model, le, features, df)
 
 setup()
 
