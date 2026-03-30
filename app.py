@@ -366,8 +366,8 @@ elif page == "⚔️ Team vs Team":
 # PAGE 4 — MATCH PREDICTOR
 # ══════════════════════════════════════════
 elif page == "🎯 Match Predictor":
-    st.title("🎯 Match Winner Predictor")
-    st.caption("Random Forest model — 15 features including win rate, head-to-head, venue advantage, recent form")
+    st.title("🎯 Historical Match Edge Analyser")
+    st.caption("Random Forest model trained on 16 seasons of IPL data — surfaces historical patterns across teams, venues, toss decisions, and head-to-head records. Not a live prediction; reflects statistical tendencies from past matches.")
 
     VENUES = [
         'M Chinnaswamy Stadium', 'Wankhede Stadium', 'Eden Gardens',
@@ -390,7 +390,7 @@ elif page == "🎯 Match Predictor":
     toss_winner   = c5.selectbox("Toss Winner", [team1, team2])
     toss_decision = c6.selectbox("Toss Decision", ["field", "bat"])
 
-    if st.button("🔮 Predict Winner", type="primary"):
+    if st.button("📊 Analyse Historical Edge", type="primary"):
         if team1 == team2:
             st.error("Please select two different teams.")
         else:
@@ -401,7 +401,7 @@ elif page == "🎯 Match Predictor":
                     city, venue, toss_winner, toss_decision
                 )
                 st.markdown("---")
-                st.subheader("Prediction Result")
+                st.subheader("Historical Edge Analysis")
                 col1, col2 = st.columns(2)
 
                 with col1:
@@ -444,16 +444,16 @@ elif page == "🎯 Match Predictor":
 
                 winner = team1 if p1 > p2 else team2
                 prob   = max(p1, p2)
-                st.success(f"Model predicts **{winner}** wins with **{prob}%** probability")
+                st.success(f"Based on historical patterns, **{winner}** has held the statistical edge in similar matchups — appearing as the stronger side in **{prob}%** of analogous scenarios")
 
                 st.markdown("---")
-                st.subheader("Why this prediction? — Feature Breakdown")
+                st.subheader("Why this result? — Factor Breakdown")
                 for factor, value in breakdown.items():
                     c_l, c_r = st.columns([1,2])
                     c_l.markdown(f"**{factor}**")
                     c_r.markdown(value)
 
-                st.info("Model uses 15 features: team strength, head-to-head record, venue advantage, recent form, and toss factors. Cricket is still gloriously unpredictable!")
+                st.info("ℹ️ **How to read this:** The percentages reflect historical win rates across 16 seasons of IPL data under similar conditions (teams, venue, toss). The model uses 15 engineered features — team win rate, head-to-head record, venue advantage, recent form, and toss factors. Cricket is famously unpredictable; this tool surfaces patterns, not certainties.")
 
             except Exception as e:
                 st.error(f"Error: {e}")
