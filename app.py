@@ -365,7 +365,7 @@ elif page == "⚔️ Team vs Team":
 # ══════════════════════════════════════════
 # PAGE 4 — MATCH PREDICTOR
 # ══════════════════════════════════════════
-elif page == "🎯 Match Predictor":
+elif page == "🎯 Historical Edge Analyser":
     st.title("🎯 Historical Match Edge Analyser")
     st.caption("Random Forest model trained on 16 seasons of IPL data — surfaces historical patterns across teams, venues, toss decisions, and head-to-head records. Not a live prediction; reflects statistical tendencies from past matches.")
 
