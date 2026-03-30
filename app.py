@@ -82,7 +82,7 @@ page = st.sidebar.radio("Navigate", [
     "🏆 Season Overview",
     "🏏 Player Analyser",
     "⚔️ Team vs Team",
-    "🎯 Match Predictor",
+    "🎯 Historical Edge Analyser",
 ])
 st.sidebar.markdown("---")
 st.sidebar.caption("Built by Sridhar M · Data: Kaggle IPL Dataset 2008–2023")
